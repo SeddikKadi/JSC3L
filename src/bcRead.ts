@@ -114,10 +114,10 @@ export default abstract class BcReadAbstract {
   }
 
   async read (contract: string, address: string, args?: any[],
-              blockNb: string = 'pending'): Promise<string> {
+              blockNb: string | number = 'pending'): Promise<string> {
     args = args || []
     const ethCall = getDataObj(contract, address, args)
-    if (blockNb !== 'pending') {
+    if (typeof blockNb !== 'string') {
       blockNb = '0x' + new BigNumber(blockNb).toString(16)
     }
     try {
