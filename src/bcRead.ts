@@ -5,14 +5,16 @@ import { getNakedAddress, padLeft, getDataObj } from './ethereum/ethFuncs'
 
 
 
-function decodeData (abiType: string, data: string): any {
+function decodeData (abiType, data) {
+  debugger
   if (data.startsWith('0x')) {
     data = data.slice(2)
   }
   if (data.length === 0) {
     return null
   }
-  let dataBuffer: Buffer
+  let dataBuffer
+  // XXXvlab: try/catch useless
   try {
     dataBuffer = Buffer.from(data, 'hex')
   } catch (e) {
@@ -51,7 +53,10 @@ function decodeData (abiType: string, data: string): any {
     case 'uint256':
       return uintData
     case 'number/100':
-      return (decodeData('number', data) / 100.0).toString()
+      // Avoid passing through float and division by 100 to ensure format X...X.YY
+      let data_int = decodeData('number', data)            // garanteed int
+      let data_str = data_int.toString().padStart(3, "0")  // garanteed >3 sized string representing int
+      return `${data_str.slice(0,-2)}.${data_str.slice(-2)}`
     case 'number':
       const shortData = '0x' + data.slice(-12)
       let a = parseInt(shortData, 16)
